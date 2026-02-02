@@ -654,6 +654,49 @@ select gcd(-9223372036854775808, 0);
 query error DataFusion error: Arrow error: Compute error: Signed integer overflow in GCD\(0, \-9223372036854775808\)
 select gcd(0, -9223372036854775808);
 
+# gcd with array vs literal
+query R
+select gcd(2::decimal(38, 0), 3::decimal(38, 0));
+----
+1
+
+# different input scales
+query RT
+select gcd(20::decimal(38, 5), 1000::decimal(15, 3)),
+       arrow_typeof(gcd(20::decimal(38, 5), 1000::decimal(15, 3)));
+----
+20 Decimal128(38, 5)
+
+# gcd with array vs array
+query R
+SELECT gcd(cast(a as decimal(38, 0)), cast(b as decimal(38, 0))) AS result
+FROM (VALUES (2, 3)) AS t(a, b);
+----
+1
+
+## gcd with extra cases
+query R
+SELECT gcd(cast(a as decimal(38, 0)), cast(b as decimal(38, 0))) AS result
+FROM (VALUES (0, 0), (2, 0), (0, 2), (2, 3), (15, 10), (20, 1000)) AS t(a, b);
+----
+0
+2
+2
+1
+5
+20
+
+## gcd with extra cases
+query R
+SELECT gcd(cast(a as decimal(38, 5)), cast(b as decimal(38, 3))) AS result
+FROM (VALUES (0, 0), (2, 0), (0, 2), (2, 3), (15, 10), (20, 1000)) AS t(a, b);
+----
+0
+2
+2
+1
+5
+20
 
 ## lcm
 

@@ -142,6 +142,11 @@ where
 {
     let left = left.as_primitive::<L>();
     let right = right.cast_to(&R::DATA_TYPE, None)?;
+    log::info!(
+        "Calculating binary math with left {:?} and right {:?}",
+        &left,
+        &right
+    );
     let result = match right {
         ColumnarValue::Scalar(scalar) => {
             if scalar.is_null() {
@@ -164,6 +169,7 @@ where
             try_binary::<_, _, _, O>(left, right, &fun)?
         }
     };
+    log::info!("Calculating binary math with result {:?}", &result);
     Ok(Arc::new(result) as _)
 }
 

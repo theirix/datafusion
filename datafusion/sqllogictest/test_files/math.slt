@@ -675,17 +675,23 @@ select gcd(a, b), gcd(c*d + 1, abs(e)) + f from signed_integers;
 NULL NULL
 
 # gcd(i64::MIN, i64::MIN)
-query error DataFusion error: Arrow error: Compute error: Signed integer overflow in GCD\(\-9223372036854775808, \-9223372036854775808\)
+query error DataFusion error: Arrow error: Compute error: Signed integer overflow
 select gcd(-9223372036854775808, -9223372036854775808);
 
 # gcd(i64::MIN, 0)
-query error DataFusion error: Arrow error: Compute error: Signed integer overflow in GCD\(\-9223372036854775808, 0\)
+query error DataFusion error: Arrow error: Compute error: Signed integer overflow
 select gcd(-9223372036854775808, 0);
 
 # gcd(0, i64::MIN)
-query error DataFusion error: Arrow error: Compute error: Signed integer overflow in GCD\(0, \-9223372036854775808\)
+query error DataFusion error: Arrow error: Compute error: Signed integer overflow
 select gcd(0, -9223372036854775808);
 
+# # decimal: array vs literal
+# # WIP: fail
+# query R
+# select gcd(2::decimal(38, 0), 3::decimal(38, 0));
+# ----
+# 1
 
 ## lcm
 
